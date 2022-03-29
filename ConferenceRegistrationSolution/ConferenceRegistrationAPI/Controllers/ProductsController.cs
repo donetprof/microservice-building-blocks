@@ -1,4 +1,6 @@
-﻿namespace ConferenceRegistrationAPI.Controllers;
+﻿using MongoDB.Bson;
+
+namespace ConferenceRegistrationAPI.Controllers;
 
 public class ProductsController : ControllerBase
 {
@@ -10,18 +12,33 @@ public class ProductsController : ControllerBase
         _productsDomainService = productsDomainService;
     }
 
-    [HttpGet("products/{id:int}")]
-    public async Task<ActionResult> GetProduct(int id)
+    [HttpGet("products/{id}")]
+    public async Task<ActionResult> GetProduct(string id)
     {
-        ProductInformationResponse response = await _productsDomainService.GetProductAsync(id);
-
-        if(response == null)
+        if (ObjectId.TryParse(id, out var _))
         {
-            return NotFound();
+            ProductInformationResponse response = await _productsDomainService.GetProductAsync(id);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(response);
+            }
         }
         else
         {
-            return Ok(response);
+            return NotFound(); // BadRequest() 400
         }
+
+    }
+
+    [HttpGet("products")]
+    public async Task<ActionResult> GetAllProductsAsync()
+    {
+        GetProductsReponse reponse = await _productsDomainService.GetAllProductsAsync();
+        return Ok(reponse);
     }
 }

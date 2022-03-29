@@ -1,3 +1,5 @@
 ﻿namespace ConferenceRegistrationAPI.Models;
 
-public record ProductInformationResponse(int id, string name, decimal price);
+public record ProductInformationResponse(string id, string name, decimal price);
+
+public record GetProductsReponse(List<ProductInformationResponse> data);   
